@@ -58,8 +58,12 @@ def check_birdwatch(tweet_id):
     print(f'Checking Tweet {tweet_id} for Birdwatch notes')
     connection = db.getconn()
     cursor = connection.cursor()
-    cursor.execute('SELECT COUNT(*) FROM notes WHERE "tweetId" = ' + tweet_id + ';')
-    count = cursor.fetchone()
+    try:
+        cursor.execute('SELECT COUNT(*) FROM notes WHERE "tweetId" = ' + tweet_id + ';')
+        count = cursor.fetchone()
+    except:
+        print('Error when querying db')
+        return 0
     cursor.close()
     db.putconn(connection)
     return count[0]
