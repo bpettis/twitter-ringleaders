@@ -56,6 +56,7 @@ def write_yes_birdwatch(filename, id, user, text, count):
 
 def check_birdwatch(tweet_id):
     print(f'Checking Tweet {tweet_id} for Birdwatch notes')
+    time.sleep(0.25)
     connection = db.getconn()
     cursor = connection.cursor()
     try:
