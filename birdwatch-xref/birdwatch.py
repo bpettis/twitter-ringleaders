@@ -1,5 +1,5 @@
 from datetime import datetime
-import csv, psycopg2, os
+import csv, psycopg2, os, time
 from dotenv import load_dotenv, find_dotenv
 from psycopg2 import pool
 
@@ -84,6 +84,7 @@ def check_file(filename):
             write_yes_birdwatch(output_name, tweet, line['from_user'], line['text'], count)
     file.close()
     print(f'Finished checking {filename}')
+    time.sleep(0.5)
 
 def main():
     
