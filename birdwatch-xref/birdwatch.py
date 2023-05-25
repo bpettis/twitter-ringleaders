@@ -29,18 +29,18 @@ def connection_pool():
 
 
 
-def output_setup():
-    with open('output_birdwatch-xref.csv', 'w') as f:
+def output_setup(filename):
+    with open(filename, 'w') as f:
         writer = csv.writer(f)
         writer.writerow(header)
 
-def write_no_birdwatch(id, user, text):
+def write_no_birdwatch(filename, id, user, text):
     row = [id, user, text, 'false', '0', '', '', '']
-    with open('output_birdwatch-xref.csv', 'a') as f:
+    with open(filename, 'a') as f:
         writer = csv.writer(f)
         writer.writerow(row)
 
-def write_yes_birdwatch(id, user, text, count):
+def write_yes_birdwatch(filename, id, user, text, count):
     print(f'Getting all Birdwatch notes for Tweet {id}')
     connection = db.getconn()
     cursor = connection.cursor()
@@ -48,7 +48,7 @@ def write_yes_birdwatch(id, user, text, count):
     notes = cursor.fetchall()
     for note in notes:
         row = [id, user, text, 'true', count, note[0], note[1], 'https://birdwatcharchive.org/notes/' + str(note[0])]
-        with open('output_birdwatch-xref.csv', 'a') as f:
+        with open(filename, 'a') as f:
             writer = csv.writer(f)
             writer.writerow(row)
     cursor.close()
@@ -68,19 +68,36 @@ def check_birdwatch(tweet_id):
     db.putconn(connection)
     return count[0]
 
-def main():
-    output_setup()
-
-    file = open('data/ZackSnyderJusticeLeague.csv')
+def check_file(filename):
+    print(f'Now checking {filename}')
+    file = open(filename)
+    output_name = 'output/birdwatch-xref_' + filename.split('/')[1]
+    print(output_name)
+    output_setup(output_name)
     lines = csv.DictReader(file)
     for line in lines:
         tweet = line['\ufeffid_str']
         count = check_birdwatch(tweet)
         if count == 0:
-            write_no_birdwatch(tweet, line['from_user'], line['text'])
+            write_no_birdwatch(output_name, tweet, line['from_user'], line['text'])
         else:
-            write_yes_birdwatch(tweet, line['from_user'], line['text'], count)
+            write_yes_birdwatch(output_name, tweet, line['from_user'], line['text'], count)
     file.close()
+    print(f'Finished checking {filename}')
+
+def main():
+    
+    directory = 'data'
+    counter = 0
+    for filename in os.listdir(directory):
+        f = os.path.join(directory, filename)
+        # checking if it is a file
+        if os.path.isfile(f):
+            print(f)
+            check_file(f)
+        counter += 1
+    print(f'Finished! Checked {str(counter)} files.')
+
 
 
 
