@@ -62,8 +62,18 @@ def check_birdwatch(tweet_id):
     try:
         cursor.execute('SELECT COUNT(*) FROM notes WHERE "tweetId" = ' + tweet_id + ';')
         count = cursor.fetchone()
+    except psycopg2.pool.PoolError as e:
+        print(f'PoolError - {type(e)}')
+        print(e)
+        cursor.close()
+        db.putconn(connection)
+        time.sleep(1)
+        return 0
     except:
         print('Error when querying db')
+        cursor.close()
+        db.putconn(connection)
+        time.sleep(1)
         return 0
     cursor.close()
     db.putconn(connection)
