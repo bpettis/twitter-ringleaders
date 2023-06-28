@@ -13,3 +13,9 @@ Similarly, scripts' output directories will be excluded via `.gitignore` to avoi
 ---
 
 ## Birdwatch Crossreferencing (`birdwatch-xref`)
+
+## Check Users (`checkusers`)
+
+Take a CSV file which contains twitter usernames and attempt to determine whether the account is active, suspended, or deleted.
+
+More details: (user-checking/README.md)[user-checking/README.md]
