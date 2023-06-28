@@ -2,18 +2,19 @@ from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 
+# Set up input/output files here:
+input_filename = 'put/file/here.csv'
+output_filename = 'put/file/here-out.csv'
 
-filename = 'put/file/here.csv'
 
 def main():
-    print(f'Now checking usernames from {filename}')
+    print(f'Now checking usernames from {input_filename}')
 
     headlesschrome = setup_selenium()
 
 
     url = 'https://example.com'
     page_text = load_page(headlesschrome, url)
-    print(page_text)
 
     search_page(page_text)
 
@@ -35,9 +36,17 @@ def load_page(driver, url):
     return driver.page_source
 
 def search_page(page):
-    term = 'Example'
-    # print True if text is present else False
-    print(term in page)
+    terms = ['Automated by </span>', # Means that the account is likely labelled as a bot account by its owner
+             'This account doesn’t exist</span>', # Means that the account is deleted, or never existed to start with
+             'Twitter suspends accounts that violate the Twitter Rules. </span>', # Means there is a message about account being suspended
+             'Follow</span>' # Means the account likely exists and is not deleted - because it has an active follow button
+            ]
+
+    for term in terms:
+        if (term in page):
+            print(f'{term} was found in page')
+        else:
+            print(f'{term} was NOT found in page')
 
 
 
