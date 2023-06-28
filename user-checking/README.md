@@ -5,4 +5,18 @@ Even though the API is gone (but also maybe not fully gone) there are still ways
 Aaaaannddd, we may be able to automate this checking
 
 - selenium - a python library to interact with a browser
-- phantomJS - a headless virtual browser
+- chrome - a web browser, but we'll run it in a headless mode (so nothing appears onscreen)
+
+You will need the Chrome Driver for selenium. You can download it from https://chromedriver.chromium.org/downloads
+Be sure to add the executable to your `PATH` - on macOS I did this by copying the binary to `/usr/local/bin/chromedriver`
+
+## Installation:
+
+
+Install selenium with pip:
+
+```
+pip3 install selenium
+```
+
+---
