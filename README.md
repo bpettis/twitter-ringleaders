@@ -12,4 +12,14 @@ Similarly, scripts' output directories will be excluded via `.gitignore` to avoi
 
 ---
 
-## Birdwatch Crossreferencing (`birdwatch-xref`)
+## Scripts
+
+Simple descriptions/overviews of each script and/or project component.
+
+### Birdwatch Crossreferencing (`birdwatch-xref`)
+
+Compare a list of Tweet IDs and determine which, if any, received notes in Birdwatch/Community Notes, Twitter's crowd-sourced program for fact-checking and community moderation.
+
+Birdwatch data is pulled from the [Birdwatch Archive](https://birdwatcharchive.org/) project, which itself relies on these scripts: https://github.com/bpettis/birdwatch-scraper
+
+More details: [birdwatch-xref/README.md](birdwatch-xref/README.md)
