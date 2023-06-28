@@ -167,3 +167,6 @@ cython_debug/
 
 ## project-specific ignores ##
 data/*
+
+## ignore output
+output/*
