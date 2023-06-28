@@ -4,8 +4,8 @@ from selenium.webdriver.chrome.options import Options as ChromeOptions
 import csv, time
 
 # Set up input/output files here:
-input_filename = 'data/testfile.csv' # don't forget that file paths will be relative to the current working directory when the script is ran
-output_filename = 'output/testoutput.csv'
+input_filename = 'data/allusers_freq.csv' # don't forget that file paths will be relative to the current working directory when the script is ran
+output_filename = 'output/allusers_statuses.csv'
 
 
 def main():
@@ -22,12 +22,12 @@ def main():
     with open(input_filename) as csvfile:
         r = csv.reader(csvfile)
         for row in r:
-            username = row[1]
+            username = row[0]
             url = 'https://twitter.com/' + username # concatenate a URL to the twitter profile
             print(f'Checking {username} : {url}') # print contents of column 2
             page_text = load_page(headlesschrome, url) # open the twitter profile and get the page source
             status = search_page(page_text) # guess the user status by searching for text on the page
-            write_output(output_filename, username, status)
+            write_output(output_filename, username, status, row[1], row[2])
 
     
 
@@ -69,13 +69,13 @@ def search_page(page):
 
 def setup_output(file):
     with open (file, 'w') as outfile:
-        row = ['username', 'status']
+        row = ['username', 'status', 'source', 'multiples']
         w = csv.writer(outfile)
         w.writerow(row)
 
-def write_output(file, username, status):
+def write_output(file, username, status, source, multiples):
     with open (file, 'a') as outfile:
-        row = [username, status]
+        row = [username, status, source, multiples]
         w = csv.writer(outfile)
         w.writerow(row)
 
