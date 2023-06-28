@@ -1,7 +1,7 @@
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
-import csv
+import csv, time
 
 # Set up input/output files here:
 input_filename = 'data/testfile.csv' # don't forget that file paths will be relative to the current working directory when the script is ran
@@ -23,8 +23,8 @@ def main():
         r = csv.reader(csvfile)
         for row in r:
             username = row[1]
-            print(f'Checking {username}') # print contents of column 2
             url = 'https://twitter.com/' + username # concatenate a URL to the twitter profile
+            print(f'Checking {username} : {url}') # print contents of column 2
             page_text = load_page(headlesschrome, url) # open the twitter profile and get the page source
             status = search_page(page_text) # guess the user status by searching for text on the page
             write_output(output_filename, username, status)
@@ -46,6 +46,7 @@ def setup_selenium():
 # load a specified URL and return the page source as text
 def load_page(driver, url):
     driver.get(url)
+    time.sleep(2)
     return driver.page_source
 
 def search_page(page):
@@ -61,8 +62,6 @@ def search_page(page):
         if (term[0] in page):
             print(f'{term[1]} : "{term[0]}" was found in page')
             status = term[1]
-        else:
-            print(f'"{term[0]}" was NOT found in page')
     
     return status
 
