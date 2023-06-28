@@ -46,7 +46,7 @@ def setup_selenium():
 # load a specified URL and return the page source as text
 def load_page(driver, url):
     driver.get(url)
-    time.sleep(2)
+    time.sleep(0.5)
     return driver.page_source
 
 def search_page(page):
@@ -64,6 +64,7 @@ def search_page(page):
             status = term[1]
     
     return status
+
 
 
 def setup_output(file):
