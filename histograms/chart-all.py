@@ -5,6 +5,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 
 
@@ -30,14 +31,18 @@ args = argParser.parse_args()
 
 
 def create_chart(df, col):
-    df.plot.hist(column=col, grid=True, bins=20, rwidth=0.9,
-                    color='#607c8e')
-    plt.title(args.title)
-    plt.xlabel('Tweets')
-    plt.ylabel('Timestamp')
-    plt.grid(axis='y', alpha=0.75)
-    plt.savefig(args.output)
+    # df.plot.hist(column=col, grid=True, bins=20, rwidth=0.9,
+    #                 color='#607c8e')
 
+    plt.figure(figsize=(50, 10))
+
+    df.groupby(df[col].dt.to_period('H')).count().unstack().plot(kind='bar')
+
+    plt.title(args.title)
+    plt.xlabel('Timestamp')
+    plt.ylabel('Tweets')
+    plt.grid(axis='y', alpha=0.75)
+    plt.savefig(args.output, dpi=150)
 
 def main():
     print(f'Reading data from {args.input}')
@@ -51,14 +56,14 @@ def main():
     print(f'Using column {args.column_number} - which is labelled "{column}"')
 
     # df[column] = pd.to_datetime(df[column], unit='h')
-    df[column] = pd.to_datetime(df[column])
+    df[column] = df[column].astype("datetime64")
 
     print('Preview of converted DataFrame:')
     print(df[[column]].head(5))
 
     # Send the dataframe to our charter function    
     try:
-        create_chart(df.head(25), column)
+        create_chart(df, column)
         print(f'Created a chart and saved to {args.output}')
     except Exception as e:
         print(f'Error when making chart: {type(e)}')
