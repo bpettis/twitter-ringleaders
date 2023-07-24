@@ -23,14 +23,14 @@ run "%(prog)s --help" to view more information''',
 )
 argParser.add_argument("-i", "--input", required=True, help="Path to the CSV file to read from")
 argParser.add_argument("-o", "--output", required=True, help="Path to output the histogram to")
-argParser.add_argument("-c", "--column-number", type=int, defualt=3, help="Index of column in CSV which contains the timestamps. Start counting at 0! - (default is 3)")
+argParser.add_argument("-c", "--column-number", type=int, default=3, help="Index of column in CSV which contains the timestamps. Start counting at 0! - (default is 3)")
 argParser.add_argument("-t", "--title", type=str, default='Tweet Frequency', help="Title that should be displayed above the chart")
 
 args = argParser.parse_args()
 
 
-def create_chart(df):
-    df.plot.hist(grid=True, bins=20, rwidth=0.9,
+def create_chart(df, col):
+    df.plot.hist(column=col, grid=True, bins=20, rwidth=0.9,
                     color='#607c8e')
     plt.title(args.title)
     plt.xlabel('Tweets')
@@ -43,12 +43,22 @@ def main():
     print(f'Reading data from {args.input}')
 
     # Get the column with the date/timestamps out of the CSV file and load it into a pandas dataframe
+    df = pd.read_csv(args.input)
+    print(f'Loaded dataframe with {df.size} rows')
 
-    # Send the dataframe to our charter function
-    commutes = pd.Series(np.random.gamma(1000, size=10) ** 1.5)
-    
+    # Make sure that the date column is the correct data type
+    column = df.columns[args.column_number]
+    print(f'Using column {args.column_number} - which is labelled "{column}"')
+
+    # df[column] = pd.to_datetime(df[column], unit='h')
+    df[column] = pd.to_datetime(df[column])
+
+    print('Preview of converted DataFrame:')
+    print(df[[column]].head(5))
+
+    # Send the dataframe to our charter function    
     try:
-        create_chart(commutes)
+        create_chart(df.head(25), column)
         print(f'Created a chart and saved to {args.output}')
     except Exception as e:
         print(f'Error when making chart: {type(e)}')
