@@ -31,17 +31,28 @@ args = argParser.parse_args()
 
 
 def create_chart(df, col):
-    # df.plot.hist(column=col, grid=True, bins=20, rwidth=0.9,
-    #                 color='#607c8e')
-
+    # Create a plot
     plt.figure(figsize=(50, 10))
 
-    df.groupby(df[col].dt.to_period('H')).count().unstack().plot(kind='bar')
 
+    # Add the data (Group the datetime elements by hour)
+    df[col].groupby(df[col].dt.to_period('H')).count().plot(kind='bar')
+
+    # Limit how many x-ticks get displayed
+    ax = plt.gca()
+    ax.set_xticks(ax.get_xticks()[::50]) # Display every 50th tick
+
+    # Set some display settings
+    plt.margins(0.5)
+    plt.xticks(rotation = 45)
+    plt.grid(axis='y', alpha=0.75)
+
+    # Add some labels
     plt.title(args.title)
     plt.xlabel('Timestamp')
     plt.ylabel('Tweets')
-    plt.grid(axis='y', alpha=0.75)
+    
+    # Output to file
     plt.savefig(args.output, dpi=150)
 
 def main():
@@ -56,10 +67,14 @@ def main():
     print(f'Using column {args.column_number} - which is labelled "{column}"')
 
     # df[column] = pd.to_datetime(df[column], unit='h')
-    df[column] = df[column].astype("datetime64")
+    df[column] = df[column].astype("datetime64[s]")
 
     print('Preview of converted DataFrame:')
     print(df[[column]].head(5))
+
+    startDate = min(df[column])
+    endDate = max(df[column])
+    print(f'Chart will range from {startDate} to {endDate}')
 
     # Send the dataframe to our charter function    
     try:
