@@ -40,11 +40,11 @@ def create_chart(df, col):
 
     # Limit how many x-ticks get displayed
     ax = plt.gca()
-    ax.set_xticks(ax.get_xticks()[::50]) # Display every 50th tick
+    ax.set_xticks(ax.get_xticks()[::6]) # Display every 6th tick
 
     # Set some display settings
     plt.margins(0.5)
-    plt.xticks(rotation = 45)
+    plt.xticks(rotation = -45, ha="left", rotation_mode="anchor")
     plt.grid(axis='y', alpha=0.75)
 
     # Add some labels
