@@ -11,11 +11,13 @@ import matplotlib.dates as mdates
 
 # Setup command line arguments:
 argParser = argparse.ArgumentParser(description='''
-**Twitter Histogram Generator **
+**Twitter Histogram Generator (Retweets Only) **
 
 
 This silly little program takes an input CSV file containing tweets and generates a histogram of tweet frequency.
-It's a great way to visualize trends of Twitter activity
+It's a great way to visualize trends of Twitter activity.
+                                    
+This script will chart only the frequency of Retweets - based on the text beginning with "RT @"
     
 Created by Ben Pettis''',
     usage='''%(prog)s -i [input file] -o [output file]
@@ -25,6 +27,7 @@ run "%(prog)s --help" to view more information''',
 argParser.add_argument("-i", "--input", required=True, help="Path to the CSV file to read from")
 argParser.add_argument("-o", "--output", required=True, help="Path to output the histogram to")
 argParser.add_argument("-c", "--column-number", type=int, default=3, help="Index of column in CSV which contains the timestamps. Start counting at 0! - (default is 3)")
+argParser.add_argument("-r", "--retweet-column", type=int, default=2, help="Index of column in CSV which contains the Tweet Text. Start counting at 0! - (default value is 2)")
 argParser.add_argument("-t", "--title", type=str, default='Tweet Frequency', help="Title that should be displayed above the chart")
 
 args = argParser.parse_args()
@@ -65,22 +68,33 @@ def main():
     print(f'Loaded dataframe with {df.size} rows')
 
     # Make sure that the date column is the correct data type
-    column = df.columns[args.column_number]
-    print(f'Using column {args.column_number} - which is labelled "{column}"')
+    dateColumn = df.columns[args.column_number]
+    print(f'Using column {args.column_number} - which is labelled "{dateColumn}"')
 
     # df[column] = pd.to_datetime(df[column], unit='h')
-    df[column] = df[column].astype("datetime64[s]")
+    df[dateColumn] = df[dateColumn].astype("datetime64[s]")
 
     print('Preview of converted DataFrame:')
-    print(df[[column]].head(5))
+    print(df[[dateColumn]].head(5))
 
-    startDate = min(df[column])
-    endDate = max(df[column])
+    startDate = min(df[dateColumn])
+    endDate = max(df[dateColumn])
     print(f'Chart will range from {startDate} to {endDate}')
+
+    
+
+    # Filter the dataframe to only chart retweets
+    retweetColumn = df.columns[args.retweet_column]
+    print('\nNow filtering Retweets\n')
+    print(f'Reading column {args.retweet_column} - which is labelled "{retweetColumn}"')
+    boolean_series = df[retweetColumn].str.startswith("RT @", na = False)
+    filteredDf = df[boolean_series]
+    print('Preview of filtered DataFrame:')
+    print(filteredDf)
 
     # Send the dataframe to our charter function    
     try:
-        create_chart(df, column)
+        create_chart(filteredDf, dateColumn)
         print(f'Created a chart and saved to {args.output}')
     except Exception as e:
         print(f'Error when making chart: {type(e)}')
