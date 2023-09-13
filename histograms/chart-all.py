@@ -68,8 +68,8 @@ def main():
     column = df.columns[args.column_number]
     print(f'Using column {args.column_number} - which is labelled "{column}"')
 
-    # df[column] = pd.to_datetime(df[column], unit='h')
-    df[column] = df[column].astype("datetime64[s]")
+    df[column] = pd.to_datetime(df[column], errors='coerce', dayfirst=True, utc=True, infer_datetime_format=True, cache=True)
+    # df[column] = df[column].astype("datetime64[s]")
 
     print('Preview of converted DataFrame:')
     print(df[[column]].head(5))

@@ -33,13 +33,14 @@ argParser.add_argument("-t", "--title", type=str, default='Tweet Frequency', hel
 args = argParser.parse_args()
 
 
-def create_chart(df, col):
+def create_chart(df):
     # Create a plot
     plt.figure(figsize=(25, 15))
 
 
     # Add the data (Group the datetime elements by hour)
-    df[col].groupby(df[col].dt.to_period('H')).count().plot(kind='bar', width=0.75)
+    df.plot(kind="bar", width=0.75)
+
 
     # Limit how many x-ticks get displayed
     ax = plt.gca()
@@ -74,7 +75,6 @@ def main():
     df[dateColumn] = pd.to_datetime(df[dateColumn], errors='coerce', dayfirst=True, utc=True, infer_datetime_format=True, cache=True)
     # df[dateColumn] = df[dateColumn].astype("datetime64[s]")
 
-
     print('Preview of converted DataFrame:')
     print(df[[dateColumn]].head(5))
 
@@ -93,9 +93,18 @@ def main():
     print('Preview of filtered DataFrame:')
     print(filteredDf)
 
+    # Combine the dataframes for easier charting
+    combined = pd.DataFrame([df[dateColumn].groupby(df[dateColumn].dt.to_period('H')).count(), filteredDf[dateColumn].groupby(filteredDf[dateColumn].dt.to_period('H')).count()]).transpose()
+    combined.columns = ['all_tweets', 'retweets']
+    
+    
+
+    print('Preview of combined DataFrame:')
+    print(combined)
+
     # Send the dataframe to our charter function    
     try:
-        create_chart(filteredDf, dateColumn)
+        create_chart(combined)
         print(f'Created a chart and saved to {args.output}')
     except Exception as e:
         print(f'Error when making chart: {type(e)}')
