@@ -25,3 +25,10 @@ Example:
 ```
 python3 chart-all.py -i ../data/batman.csv -o batman-all.png -t "Batman - Frequency of All Tweets"
 ```
+
+---
+
+# To-Do
+
+[] Write Readme for the retweet and combined charting scripts
+[] include some example data in the repo
