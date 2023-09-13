@@ -87,17 +87,8 @@ def main():
 
     # Filter the dataframe to only chart tweets posted by specified users 
 
-    # user_list
-    # user_column
-
-    # opening the file in read mode
     input_file = open(args.user_list, "r")
-    
-    # reading the file
     data = input_file.read()
-    
-    # replacing end splitting the text 
-    # when newline ('\n') is seen.
     usernamelist = data.split("\n")
     input_file.close()
 
