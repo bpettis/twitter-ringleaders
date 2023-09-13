@@ -92,12 +92,12 @@ def main():
     print('\nNow filtering Retweets\n')
     print(f'Reading column {args.retweet_column} - which is labelled "{retweetColumn}"')
     boolean_series = df[retweetColumn].str.startswith("RT @", na = False)
-    filteredDf = df[boolean_series]
+    retweetsDf = df[boolean_series]
     print('Preview of filtered DataFrame:')
-    print(filteredDf)
+    print(retweetsDf)
 
     # Combine the dataframes for easier charting
-    combined = pd.DataFrame([df[dateColumn].groupby(df[dateColumn].dt.to_period('H')).count(), filteredDf[dateColumn].groupby(filteredDf[dateColumn].dt.to_period('H')).count()]).transpose()
+    combined = pd.DataFrame([df[dateColumn].groupby(df[dateColumn].dt.to_period('H')).count(), retweetsDf[dateColumn].groupby(retweetsDf[dateColumn].dt.to_period('H')).count()]).transpose()
     combined.columns = ['all_tweets', 'retweets']
     
     
