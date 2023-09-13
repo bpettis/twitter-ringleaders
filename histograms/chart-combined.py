@@ -23,13 +23,15 @@ This script will chart multiple series:
     - tweets by specified "top users" - based on an input TXT file of usernames.
     
 Created by Ben Pettis''',
-    usage='''%(prog)s -i [input file] -o [output file]
+    usage='''%(prog)s -i [input file] -o [output file] -l [username list]
 run "%(prog)s --help" to view more information''',
     formatter_class=argparse.RawTextHelpFormatter
 )
 argParser.add_argument("-i", "--input", required=True, help="Path to the CSV file to read from")
 argParser.add_argument("-o", "--output", required=True, help="Path to output the histogram to")
+argParser.add_argument("-l", "--user-list", type=str, required=True, help="Path to a TXT file containing a list of usernames")
 argParser.add_argument("-c", "--column-number", type=int, default=3, help="Index of column in CSV which contains the timestamps. Start counting at 0! - (default is 3)")
+argParser.add_argument("-u", "--user-column", type=int, default=1, help="Index of column in CSV which contains the usernames. Start counting at 0! - (default is 1)")
 argParser.add_argument("-r", "--retweet-column", type=int, default=2, help="Index of column in CSV which contains the Tweet Text. Start counting at 0! - (default value is 2)")
 argParser.add_argument("-t", "--title", type=str, default='Tweet Frequency', help="Title that should be displayed above the chart")
 
@@ -96,11 +98,25 @@ def main():
     print('Preview of filtered DataFrame:')
     print(retweetsDf)
 
+    # Filter the dataframe to only chart tweets posted by specified users
+    input_file = open(args.user_list, "r")
+    data = input_file.read()
+    usernamelist = data.split("\n")
+    input_file.close()
+
+    print(f'Read {str(len(usernamelist))} usernames from {args.user_list}')
+
+    usernameColumn = df.columns[args.user_column]
+    print('\nNow filtering for Specified Tweeters\n')
+    print(f'Reading column {args.user_column} - which is labelled "{usernameColumn}"')
+    boolean_series = df[usernameColumn].isin(usernamelist)
+    top_tweeter_df = df[boolean_series]
+    print('Preview of filtered DataFrame:')
+    print(top_tweeter_df)
+
     # Combine the dataframes for easier charting
-    combined = pd.DataFrame([df[dateColumn].groupby(df[dateColumn].dt.to_period('H')).count(), retweetsDf[dateColumn].groupby(retweetsDf[dateColumn].dt.to_period('H')).count()]).transpose()
-    combined.columns = ['all_tweets', 'retweets']
-    
-    
+    combined = pd.DataFrame([df[dateColumn].groupby(df[dateColumn].dt.to_period('H')).count(), retweetsDf[dateColumn].groupby(retweetsDf[dateColumn].dt.to_period('H')).count(), top_tweeter_df[dateColumn].groupby(top_tweeter_df[dateColumn].dt.to_period('H')).count()]).transpose()
+    combined.columns = ['all_tweets', 'retweets', 'top_tweeters']
 
     print('Preview of combined DataFrame:')
     print(combined)
