@@ -29,6 +29,8 @@ argParser.add_argument("-o", "--output", required=True, help="Path to output the
 argParser.add_argument("-c", "--column-number", type=int, default=3, help="Index of column in CSV which contains the timestamps. Start counting at 0! - (default is 3)")
 argParser.add_argument("-r", "--retweet-column", type=int, default=2, help="Index of column in CSV which contains the Tweet Text. Start counting at 0! - (default value is 2)")
 argParser.add_argument("-t", "--title", type=str, default='Tweet Frequency', help="Title that should be displayed above the chart")
+argParser.add_argument("-x", "--x-ticks", type=int, default=6, help="Interval of x-ticks to display. (Default is every 6th tick)")
+
 
 args = argParser.parse_args()
 
@@ -43,7 +45,8 @@ def create_chart(df, col):
 
     # Limit how many x-ticks get displayed
     ax = plt.gca()
-    ax.set_xticks(ax.get_xticks()[::6]) # Display every 6th tick
+    interval = args.x_ticks
+    ax.set_xticks(ax.get_xticks()[::interval]) # Display every 6th tick
 
     # Set some display settings
     plt.margins(0.2)
