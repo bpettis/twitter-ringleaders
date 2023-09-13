@@ -17,7 +17,10 @@ argParser = argparse.ArgumentParser(description='''
 This silly little program takes an input CSV file containing tweets and generates a histogram of tweet frequency.
 It's a great way to visualize trends of Twitter activity.
                                     
-This script will chart only the frequency of Retweets - based on the text beginning with "RT @"
+This script will chart multiple series:
+    - all tweets
+    - the frequency of Retweets - based on the text beginning with "RT @"
+    - tweets by specified "top users" - based on an input TXT file of usernames.
     
 Created by Ben Pettis''',
     usage='''%(prog)s -i [input file] -o [output file]
