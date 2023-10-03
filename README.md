@@ -22,4 +22,11 @@ Compare a list of Tweet IDs and determine which, if any, received notes in Birdw
 
 Birdwatch data is pulled from the [Birdwatch Archive](https://birdwatcharchive.org/) project, which itself relies on these scripts: https://github.com/bpettis/birdwatch-scraper
 
+
 More details: [birdwatch-xref/README.md](birdwatch-xref/README.md)
+
+## Check Users (`checkusers`)
+
+Take a CSV file which contains twitter usernames and attempt to determine whether the account is active, suspended, or deleted.
+
+More details: (user-checking/README.md)[user-checking/README.md]
