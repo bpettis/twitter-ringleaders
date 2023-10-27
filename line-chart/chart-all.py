@@ -47,7 +47,7 @@ def create_chart(df, col):
 
 
     # Add the data (Group the datetime elements by hour)
-    df[col].groupby(df[col].dt.to_period('H')).count().plot(kind='line')
+    df[col].groupby(df[col].dt.to_period('H')).count().plot(kind='line', linewidth=5)
 
     # Limit how many x-ticks get displayed
     ax = plt.gca()
