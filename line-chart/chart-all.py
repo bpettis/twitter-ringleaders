@@ -77,7 +77,7 @@ def create_chart(df, col, startDate, endDate):
     # Add some labels
     plt.title(args.title)
     plt.xlabel('Timestamp')
-    plt.ylabel('Tweets')
+    plt.ylabel('Tweets Per Hour')
     
     plt.tight_layout()
 
