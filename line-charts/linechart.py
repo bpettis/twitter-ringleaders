@@ -21,7 +21,10 @@ This script will chart multiple series:
     - all tweets
     - the frequency of Retweets - based on the text beginning with "RT @"
     - tweets by specified "top users" - based on an input TXT file of usernames.
-    
+
+                                    
+When specifying the start/end dates (using -s or -e), use a DateTime-like format, such as "2023-10-02"
+
 Created by Ben Pettis''',
     usage='''%(prog)s -i [input file] -o [output file] -l [username list]
 run "%(prog)s --help" to view more information''',
@@ -35,6 +38,8 @@ argParser.add_argument("-u", "--user-column", type=int, default=1, help="Index o
 argParser.add_argument("-r", "--retweet-column", type=int, default=2, help="Index of column in CSV which contains the Tweet Text. Start counting at 0! - (default value is 2)")
 argParser.add_argument("-t", "--title", type=str, default='Tweet Frequency', help="Title that should be displayed above the chart")
 argParser.add_argument("-x", "--x-ticks", type=int, default=6, help="Interval of x-ticks to display. (Default is every 6th tick)")
+argParser.add_argument("-s", "--start", help="Earliest date of data that should be charted (useful for large datasets)")
+argParser.add_argument("-e", "--end", help="Latest date of data that should be charted (useful for large datasets)")
 
 args = argParser.parse_args()
 
@@ -45,7 +50,7 @@ def create_chart(df):
 
 
     # Add the data (Group the datetime elements by hour)
-    df.plot(kind="bar", width=0.75)
+    df.plot(kind="line")
 
 
     # Limit how many x-ticks get displayed
@@ -87,7 +92,23 @@ def main():
 
     startDate = min(df[dateColumn])
     endDate = max(df[dateColumn])
-    print(f'Chart will range from {startDate} to {endDate}')
+    print(f'Data ranges from {startDate} to {endDate}')
+
+    # Determine where the start/end of the data that we graph should be
+    if args.start is None:
+        chartStart = startDate
+    else:
+        chartStart = args.start
+        df = df.loc[df[dateColumn] > chartStart]
+    
+    if args.end is None:
+        chartEnd = endDate
+    else:
+        chartEnd = args.end
+        df = df.loc[df[dateColumn] < chartEnd]
+
+    print(f'Chart will range from {chartStart} to {chartEnd}')
+    print('Specify a different start/end date by passing -s or -e arguments when running this program')
 
     
 
