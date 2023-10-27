@@ -11,7 +11,7 @@ import matplotlib.dates as mdates
 
 # Setup command line arguments:
 argParser = argparse.ArgumentParser(description='''
-**Twitter Histogram Generator (Top TWeeters Only) **
+**Twitter Histogram Generator (Top Tweeters Only) **
 
 
 This silly little program takes an input CSV file containing tweets and generates a histogram of tweet frequency.
