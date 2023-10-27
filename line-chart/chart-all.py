@@ -11,10 +11,10 @@ import matplotlib.dates as mdates
 
 # Setup command line arguments:
 argParser = argparse.ArgumentParser(description='''
-**Twitter Histogram Generator **
+**Twitter Line Chart Generator **
 
 
-This silly little program takes an input CSV file containing tweets and generates a histogram of tweet frequency.
+This silly little program takes an input CSV file containing tweets and generates a line chart of tweet frequency.
 It's a great way to visualize trends of Twitter activity
     
 Created by Ben Pettis''',
@@ -23,7 +23,7 @@ run "%(prog)s --help" to view more information''',
     formatter_class=argparse.RawTextHelpFormatter
 )
 argParser.add_argument("-i", "--input", required=True, help="Path to the CSV file to read from")
-argParser.add_argument("-o", "--output", required=True, help="Path to output the histogram to")
+argParser.add_argument("-o", "--output", required=True, help="Path to output the graph image to")
 argParser.add_argument("-c", "--column-number", type=int, default=3, help="Index of column in CSV which contains the timestamps. Start counting at 0! - (default is 3)")
 argParser.add_argument("-t", "--title", type=str, default='Tweet Frequency', help="Title that should be displayed above the chart")
 argParser.add_argument("-x", "--x-ticks", type=int, default=6, help="Interval of x-ticks to display. (Default is every 6th tick)")
@@ -37,12 +37,15 @@ def create_chart(df, col):
 
 
     # Add the data (Group the datetime elements by hour)
-    df[col].groupby(df[col].dt.to_period('H')).count().plot(kind='bar', width=0.75)
+    df[col].groupby(df[col].dt.to_period('H')).count().plot(kind='line')
 
     # Limit how many x-ticks get displayed
     ax = plt.gca()
     interval = args.x_ticks
     ax.set_xticks(ax.get_xticks()[::interval]) # Display every 6th tick
+
+    # Setup the y-axis minumum
+    plt.ylim(bottom=0)
 
     # Set some display settings
     plt.margins(0.2)
@@ -57,7 +60,7 @@ def create_chart(df, col):
     plt.tight_layout()
 
     # Output to file
-    plt.savefig(args.output, dpi=150)
+    plt.savefig(args.output, dpi=300)
 
 def main():
     print(f'Reading data from {args.input}')
