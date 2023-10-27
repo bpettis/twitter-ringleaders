@@ -27,6 +27,9 @@ argParser.add_argument("-o", "--output", required=True, help="Path to output the
 argParser.add_argument("-c", "--column-number", type=int, default=3, help="Index of column in CSV which contains the timestamps. Start counting at 0! - (default is 3)")
 argParser.add_argument("-t", "--title", type=str, default='Tweet Frequency', help="Title that should be displayed above the chart")
 argParser.add_argument("-x", "--x-ticks", type=int, default=6, help="Interval of x-ticks to display. (Default is every 6th tick)")
+argParser.add_argument("-s", "--start", help="Earliest date of data that should be charted (useful for large datasets)")
+argParser.add_argument("-e", "--end", help="Latest date of data that should be charted (useful for large datasets)")
+
 
 args = argParser.parse_args()
 
@@ -34,6 +37,13 @@ args = argParser.parse_args()
 def create_chart(df, col):
     # Create a plot
     plt.figure(figsize=(25, 15))
+
+    # Set the size of elements:
+    plt.rcParams.update({'font.size': 24})
+    plt.rcParams.update({'axes.titlesize': 28})
+    plt.rcParams.update({'axes.labelsize': 24})
+    plt.rcParams.update({'xtick.labelsize': 28})
+    plt.rcParams.update({'ytick.labelsize': 28})
 
 
     # Add the data (Group the datetime elements by hour)
@@ -52,6 +62,7 @@ def create_chart(df, col):
     plt.xticks(rotation = -45, ha="left", rotation_mode="anchor")
     plt.grid(axis='y', alpha=0.75)
 
+
     # Add some labels
     plt.title(args.title)
     plt.xlabel('Timestamp')
@@ -60,7 +71,7 @@ def create_chart(df, col):
     plt.tight_layout()
 
     # Output to file
-    plt.savefig(args.output, dpi=300)
+    plt.savefig(args.output, dpi=150)
 
 def main():
     print(f'Reading data from {args.input}')
@@ -81,7 +92,24 @@ def main():
 
     startDate = min(df[column])
     endDate = max(df[column])
+    print(f'Data ranges from {startDate} to {endDate}')
+
+    # Determine where the start/end of the data that we graph should be
+    if args.start is None:
+        chartStart = startDate
+    else:
+        chartStart = args.start
+        df = df.loc[df[column] > chartStart]
+    
+    if args.end is None:
+        chartEnd = endDate
+    else:
+        chartEnd = args.end
+        df = df.loc[df[column] < chartEnd]
+
     print(f'Chart will range from {startDate} to {endDate}')
+    print('Specify a different start/end date by passing -s or -e arguments when running this program')
+
 
     # Send the dataframe to our charter function    
     try:
