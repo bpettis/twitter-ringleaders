@@ -34,7 +34,7 @@ argParser.add_argument("-e", "--end", help="Latest date of data that should be c
 args = argParser.parse_args()
 
 
-def create_chart(df, col):
+def create_chart(df, col, startDate, endDate):
     # Create a plot
     plt.figure(figsize=(25, 15))
 
@@ -47,20 +47,31 @@ def create_chart(df, col):
 
 
     # Add the data (Group the datetime elements by hour)
-    df[col].groupby(df[col].dt.to_period('H')).count().plot(kind='line', linewidth=5)
+    chartData = df[col].groupby(df[col].dt.to_period('H')).count()
+    print(type(chartData))
+    print(chartData)
+    # Use chartData.index to get the date labels
+    # Use chartData.values to get the counts
+    chartData.plot(kind='line', linewidth=5)
+
+    timestamps = pd.date_range(startDate, endDate, freq='H')
+    print('Timestamps (with extra gaps added):')
+    print(timestamps)
 
     # Limit how many x-ticks get displayed
     ax = plt.gca()
     interval = args.x_ticks
-    ax.set_xticks(ax.get_xticks()[::interval]) # Display every 6th tick
+    # ax.set_xticks(timestamps[::interval]) # Add the x-ticks (from the list of hours)
+
+    # Set some display settings
+    plt.margins(0.2)
+    plt.xticks(ticks = timestamps[::interval], labels = timestamps[::interval], rotation = -45, ha="left", rotation_mode="anchor")
+    plt.grid(axis='y', alpha=0.75)
 
     # Setup the y-axis minumum
     plt.ylim(bottom=0)
 
-    # Set some display settings
-    plt.margins(0.2)
-    plt.xticks(rotation = -45, ha="left", rotation_mode="anchor")
-    plt.grid(axis='y', alpha=0.75)
+    
 
 
     # Add some labels
@@ -107,13 +118,13 @@ def main():
         chartEnd = args.end
         df = df.loc[df[column] < chartEnd]
 
-    print(f'Chart will range from {startDate} to {endDate}')
+    print(f'Chart will range from {chartStart} to {chartEnd}')
     print('Specify a different start/end date by passing -s or -e arguments when running this program')
 
 
     # Send the dataframe to our charter function    
     try:
-        create_chart(df, column)
+        create_chart(df, column, chartStart, chartEnd)
         print(f'Created a chart and saved to {args.output}')
     except Exception as e:
         print(f'Error when making chart: {type(e)}')
