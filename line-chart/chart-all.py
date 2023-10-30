@@ -59,13 +59,13 @@ def create_chart(df, col, startDate, endDate):
     print(timestamps)
 
     # Limit how many x-ticks get displayed
-    ax = plt.gca()
+    # ax = plt.gca()
     interval = args.x_ticks
     # ax.set_xticks(timestamps[::interval]) # Add the x-ticks (from the list of hours)
 
     # Set some display settings
     plt.margins(0.2)
-    plt.xticks(ticks = timestamps[::interval], labels = timestamps[::interval], rotation = -45, ha="left", rotation_mode="anchor")
+    # plt.xticks(ticks = timestamps[::interval], labels = timestamps[::interval], rotation = -45, ha="left", rotation_mode="anchor")
     plt.grid(axis='y', alpha=0.75)
 
     # Setup the y-axis minumum
