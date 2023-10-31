@@ -22,10 +22,16 @@ This script will chart multiple series:
     - the frequency of Retweets - based on the text beginning with "RT @"
     - tweets by specified "top users" - based on an input TXT file of usernames.
 
-It will also take a list of "interesting tweets" and mark them on the line chart - as a way to assess whether there are correlations between certain rewteets and the rest of the tweet activity
-    
+It will also take a list of "interesting tweets" and mark them on the line chart - as a way to assess whether there are correlations between certain rewteets and the rest of the tweet activity.
+To do this, you will need to create a CSV file and pass this file in with the -m flag.
+
+The first row of the CSV should contain headers. The columns should be as follows:
+timestamp, label
+
+(any additional columns will be ignored)
+
 Created by Ben Pettis''',
-    usage='''%(prog)s -i [input file] -o [output file] -l [username list]
+    usage='''%(prog)s -i [input file] -o [output file] -l [username TXT list] -m [CSV of additional markers]
 run "%(prog)s --help" to view more information''',
     formatter_class=argparse.RawTextHelpFormatter
 )
@@ -40,10 +46,20 @@ argParser.add_argument("-x", "--x-ticks", type=int, default=6, help="Interval of
 argParser.add_argument("-s", "--start", help="Earliest date of data that should be charted (useful for large datasets)")
 argParser.add_argument("-e", "--end", help="Latest date of data that should be charted (useful for large datasets)")
 
+argParser.add_argument("-m", "--markers", help="Path to a CSV file containing a list of markers to add to the chart. See Read Me for more info.")
+
 
 
 args = argParser.parse_args()
 
+def get_markers(markers_csv):
+    marker_list = []
+    with open(markers_csv, 'r', encoding="utf8") as file:
+        reader = csv.reader(file)
+        marker_list = list(reader)
+
+    marker_list.pop(0) # remove the header row
+    return marker_list
 
 def create_chart(df, startDate, endDate):
     # Create a plot
@@ -91,10 +107,28 @@ def create_chart(df, startDate, endDate):
 
 
     # Add some lines
+    markers = get_markers(args.markers)
+    print('Now adding extra labels:')
+    print(markers)
     maxy = ax3.get_ylim()[1]
     lineHeight = maxy / 2
-    ax3.vlines(x=["2019-08-05 05:00:00", "2019-08-06 04:15:01"], ymin=0, ymax=lineHeight, color='r', label="Tweets of Interest")
+    cmap = plt.get_cmap("Dark2") # get the colormap
+    i = 0
+    for label in markers:
+        i += 1
+        date = label[0]
+        text = label[1]
+        combined = str(text) + ' - (' + str(date) + ')'
+        print(f'Adding marker: "{text}" at {date}')
+        ax3.vlines(x=[date], ymin=0, ymax=lineHeight, color=cmap(i), linewidth=2, label=text)
+        ax3.text(date, lineHeight, text, fontsize=18)
+        lineHeight = lineHeight * 0.95 # make the next line a bit shorter
+    # ax3.vlines(x=["2019-08-05 05:00:00", "2019-08-06 04:15:01"], ymin=0, ymax=lineHeight, color='r', label="Tweets of Interest")
+    # ax3.text("2019-08-05 05:00:00", lineHeight, 'Test Text', fontsize=18)
     
+    # TO-DO:
+    # - read list of dates from an input list
+    # - add labels to the lines
 
 
     # Add some labels
